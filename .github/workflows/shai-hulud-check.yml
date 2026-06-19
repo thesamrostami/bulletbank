@@ -1,0 +1,23 @@
+name: Shai-Hulud 2.0 Security Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly re-scan — the IoC list is still being updated as new packages are confirmed
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gensecaihq/Shai-Hulud-2.0-Detector@v2
+        with:
+          fail-on-critical: true
+          scan-lockfiles: true

@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/* ── ApplyBullets Design System ──────────────────────────────────────────── */
+
+:root {
+  /* Base */
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Brand palette */
+  --navy: #1a1f4e;
+  --navy-light: #2d3580;
+  --accent: #4E9AD9;
+  --accent-light: #e8f4fd;
+  --accent-hover: #3a85c4;
+
+  /* Semantic */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  /* Surfaces */
+  --navy-tint: rgba(26, 31, 78, 0.08);
+  --surface: #f8fafc;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-navy: var(--navy);
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-light);
+  --font-sans: var(--font-body, var(--font-geist-sans));
+  --font-display: var(--font-display, var(--font-geist-sans));
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --surface: #111827;
+    --card: #1e2535;
+    --border: #374151;
+    --border-subtle: #1f2937;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Display font for headings */
+h1, h2, h3 {
+  font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInFast {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes progressBar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.animate-fadeInFast {
+  animation: fadeInFast 0.15s ease-out both;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.25s ease-out both;
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f1f5f9 25%,
+    #e2e8f0 50%,
+    #f1f5f9 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+/* ── Utilities ───────────────────────────────────────────────────────────── */
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Transition shorthand */
+.transition-smooth {
+  transition: all 0.2s ease;
+}
