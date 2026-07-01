@@ -9,11 +9,23 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 })
 
     const body = await req.json() as { coverLetterText: string; filename?: string }
-    const { coverLetterText, filename = 'CoverLetter.pdf' } = body
+    const { coverLetterText } = body
 
     if (!coverLetterText || typeof coverLetterText !== 'string') {
       return NextResponse.json({ error: 'coverLetterText is required', code: 'BAD_REQUEST' }, { status: 400 })
     }
+
+    // The filename is echoed into the Content-Disposition header, so strip anything
+    // that could break the header (quotes, control chars, path separators) rather
+    // than trusting client input. Falls back to a safe default if nothing survives.
+    const rawName = typeof body.filename === 'string' ? body.filename : ''
+    const safeName =
+      rawName
+        .replace(/[^\w.\- ]+/g, '_')
+        .replace(/^\.+/, '')
+        .trim()
+        .slice(0, 100) || 'CoverLetter.pdf'
+    const filename = safeName.toLowerCase().endsWith('.pdf') ? safeName : `${safeName}.pdf`
 
     const { data: profile } = await supabase
       .from('profiles')

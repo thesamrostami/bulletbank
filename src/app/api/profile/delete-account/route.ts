@@ -42,14 +42,36 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const { data: files } = await supabase
+    // Files live at `${user.id}/${jobId}/${type}.${ext}` — a nested layout.
+    // list(user.id) returns the per-job *folders*, not the objects, and remove()
+    // deletes by exact object key, so we must recurse one level and collect the
+    // real keys. Anything left behind would violate the erasure guarantee.
+    const { data: jobFolders } = await supabase
       .storage
       .from('job-documents')
       .list(user.id)
 
-    if (files && files.length > 0) {
-      const paths = files.map(f => `${user.id}/${f.name}`)
-      await supabase.storage.from('job-documents').remove(paths)
+    const paths: string[] = []
+    for (const folder of jobFolders ?? []) {
+      // Storage folders are entries with a null id; real files have an id.
+      if (folder.id !== null) {
+        paths.push(`${user.id}/${folder.name}`)
+        continue
+      }
+      const { data: files } = await supabase
+        .storage
+        .from('job-documents')
+        .list(`${user.id}/${folder.name}`)
+      for (const file of files ?? []) {
+        paths.push(`${user.id}/${folder.name}/${file.name}`)
+      }
+    }
+
+    if (paths.length > 0) {
+      const { error: removeError } = await supabase.storage.from('job-documents').remove(paths)
+      if (removeError) {
+        console.error('[delete-account] Failed to remove storage objects:', removeError.message)
+      }
     }
 
     const adminClient = createClient(
