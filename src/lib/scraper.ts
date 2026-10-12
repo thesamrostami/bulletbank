@@ -31,7 +31,7 @@ async function scrapeWithCheerio(url: string): Promise<string> {
 
   const res = await fetch(url, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; ApplyBullets/1.0; job application tracker)',
+      'User-Agent': 'Mozilla/5.0 (compatible; BulletBank/1.0; job application tracker)',
     },
     redirect: 'manual',
     signal: AbortSignal.timeout(10_000),
@@ -96,6 +96,20 @@ function cleanScrapedText(text: string): string {
         'report this job', 'flag as', 'back to search',
       ]
       return !noise.some(n => lower.includes(n))
+    })
+    .filter(line => {
+      // Cheap prompt-injection heuristic: drop lines that read like attempts to
+      // override the model's instructions. Not a guarantee — the real defence is
+      // the <untrusted_job_posting> delimiting in prompts.ts.
+      const lower = line.toLowerCase()
+      const injectionMarkers = [
+        /ignore previous/,
+        /ignore all previous/,
+        /system prompt/,
+        /you are now/,
+        /disregard.*instructions/,
+      ]
+      return !injectionMarkers.some(re => re.test(lower))
     })
     .join('\n')
     .replace(/\n{3,}/g, '\n\n')

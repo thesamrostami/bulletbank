@@ -1,4 +1,6 @@
-# ApplyBullets
+# BulletBank
+
+[![CI](https://github.com/thesamrostami/bulletbank/actions/workflows/ci.yml/badge.svg)](https://github.com/thesamrostami/bulletbank/actions/workflows/ci.yml)
 
 AI-powered job application tool. Build a living bank of career achievements, paste any job, and get a tailored CV in seconds.
 
@@ -9,6 +11,7 @@ AI-powered job application tool. Build a living bank of career achievements, pas
 - **Fit analysis** — see how well your profile matches each role with scored breakdowns
 - **Cover letter generation** — AI-drafted cover letters tailored to each application
 - **Interview prep** — role-specific question generation with STAR story prompts
+- **Review pack** — turn achievements logged over a period into a draft performance-review self-assessment
 - **Job tracker** — track application status, interview dates, and documents in one place
 - **CV editor** — power-user mode for manual bullet selection and fine-tuning
 
@@ -31,8 +34,8 @@ AI-powered job application tool. Build a living bank of career achievements, pas
 
 1. Clone the repo and install dependencies:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/applybullets.git
-   cd applybullets
+   git clone https://github.com/thesamrostami/bulletbank.git
+   cd bulletbank
    npm install
    ```
 
@@ -74,6 +77,31 @@ AI-powered job application tool. Build a living bank of career achievements, pas
 | `NEXT_PUBLIC_GA_ID` | No | Google Analytics measurement ID |
 | `NEXT_PUBLIC_CLARITY_ID` | No | Microsoft Clarity project ID |
 
+## Testing
+
+Unit tests use [Vitest](https://vitest.dev) and live next to the code they cover (`src/lib/*.test.ts`).
+
+```bash
+npm test              # run once
+npm run test:watch    # re-run on change
+npm run test:coverage # with coverage report
+npm run typecheck     # tsc --noEmit
+npm run lint
+```
+
+Covered areas:
+
+- **AI layer** — `parse-ai-json` (recovering JSON from noisy model output), `validate-ai-output` (runtime shape checks before data reaches the DB), `ai-client` (temperature profiles, retry-once on 429/5xx/network errors, no retry on 4xx)
+- **Credits & rate limiting** — atomic deduction is fail-closed, rate limiting is fail-open, correct RPC payloads, 402/429 response shapes
+- **Security** — `strip-pii` (redaction before text is sent to the LLM), `validate-url` (SSRF guard: private IP ranges, IPv6, IPv4-mapped, DNS-resolved addresses)
+- **Domain logic** — bullet strength scoring, Jaccard-based duplicate detection, credit pack configuration consistency
+
+External services (Supabase, Anthropic, DNS) are mocked; no test touches the network.
+
+## Continuous Integration
+
+Every push runs `.github/workflows/ci.yml` on GitHub Actions: lint → typecheck → test, then a production `next build` with placeholder env vars. Pull requests to `main` must be green before merging.
+
 ## Deployment
 
 See [DEPLOY.md](./DEPLOY.md) for full deployment instructions (Vercel, Docker, GDPR checklist).
@@ -86,11 +114,13 @@ src/
 │   ├── (app)/           # Authenticated app routes
 │   │   ├── dashboard/   # Home dashboard
 │   │   ├── jobs/        # Job tracker, detail, apply, editor, interview prep
+│   │   ├── capture/     # Quick achievement logging (PWA shortcut target)
+│   │   ├── review-pack/ # Performance-review self-assessment drafts
 │   │   └── profile/     # Profile, onboarding, bullet bank, experience
 │   ├── auth/            # Login, signup, callback
 │   └── api/             # API routes (jobs, CV, bullets, cover letter, etc.)
 ├── components/          # Shared components (Logo, MicroCapture, FAB, etc.)
-├── lib/                 # Utilities (prompts, config, rate-limit, fonts, etc.)
+├── lib/                 # Utilities (prompts, config, rate-limit, fonts, etc.) + *.test.ts
 └── types/               # TypeScript type definitions
 supabase/
 └── schema.sql           # Complete database schema (single source of truth)

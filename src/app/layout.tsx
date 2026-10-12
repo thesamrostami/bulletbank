@@ -5,7 +5,7 @@ import AnalyticsScripts from '@/components/AnalyticsScripts'
 import { dmSans, plusJakartaSans } from '@/lib/fonts'
 
 export const metadata: Metadata = {
-  title: 'ApplyBullets — Smart Career Tool',
+  title: 'BulletBank — Smart Career Tool',
   description: 'Build your bullet bank, score jobs, prepare for interviews.',
   manifest: '/manifest.json',
   icons: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'ApplyBullets',
+    title: 'BulletBank',
   },
 }
 
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="ApplyBullets" />
+        <meta name="apple-mobile-web-app-title" content="BulletBank" />
       </head>
       <body className="bg-[var(--surface)] text-[var(--text-primary)] antialiased" suppressHydrationWarning>
         {children}

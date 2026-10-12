@@ -1,6 +1,6 @@
 {
-  "name": "ApplyBullets",
-  "short_name": "ApplyBullets",
+  "name": "BulletBank",
+  "short_name": "BulletBank",
   "description": "Smart career tool — bullet bank, CV builder, interview prep",
   "start_url": "/dashboard",
   "display": "standalone",
@@ -29,7 +29,7 @@
     },
     {
       "name": "Log achievement",
-      "url": "/profile/bullets",
+      "url": "/capture",
       "description": "Add a new bullet to your bank"
     }
   ]

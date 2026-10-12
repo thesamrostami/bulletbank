@@ -10,6 +10,7 @@ export const CREDIT_COSTS: Record<string, number> = {
   bullet_rewrite:    1,
   chat_message:      1,
   profile_extraction: 1,
+  review_pack:       3,
 }
 
 export const CREDIT_LABELS: Record<string, string> = {
@@ -24,6 +25,7 @@ export const CREDIT_LABELS: Record<string, string> = {
   bullet_rewrite:    'Bullet rewrite',
   chat_message:      'AI chat',
   profile_extraction: 'Profile import',
+  review_pack:       'Review pack',
 }
 
 export const SIGNUP_CREDITS = 150

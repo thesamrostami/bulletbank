@@ -1,5 +1,5 @@
 -- ============================================================
--- ApplyBullets — Consolidated Supabase schema
+-- BulletBank — Consolidated Supabase schema
 -- Run this on a fresh Supabase project: SQL Editor → New Query
 -- Reflects the base schema + migrations 001 through 028
 -- ============================================================

@@ -7,11 +7,11 @@ export function stripPII(text: string): string {
     // Covers: +44 7700 000000, (555) 123-4567, 07700 000000, +1-800-555-0199, etc.
     .replace(/(?:\+?\d{1,3}[\s\-.]?)?\(?\d{2,4}\)?[\s\-.]?\d{3,4}[\s\-.]?\d{3,5}(?:[\s\-.]?\d{1,4})?/g, '[phone]')
 
-    // LinkedIn URLs
-    .replace(/https?:\/\/(?:www\.)?linkedin\.com\/\S+/gi, '[linkedin-url]')
+    // LinkedIn URLs — scheme is optional because CVs usually write the bare "linkedin.com/in/…"
+    .replace(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/\S+/gi, '[linkedin-url]')
 
-    // GitHub URLs
-    .replace(/https?:\/\/(?:www\.)?github\.com\/\S+/gi, '[github-url]')
+    // GitHub URLs — same, bare "github.com/…" is the common form
+    .replace(/(?:https?:\/\/)?(?:www\.)?github\.com\/\S+/gi, '[github-url]')
 
     // Personal portfolio / website URLs (keep job-related URLs like company sites intact — only strip obvious personal domains)
     // Heuristic: URLs that appear on a line starting with "website", "portfolio", "site", "url"

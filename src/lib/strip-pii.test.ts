@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { stripPII } from './strip-pii'
 
 const cases: [string, string, string][] = [

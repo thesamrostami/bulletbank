@@ -18,7 +18,7 @@ export default function Logo({ size = 24, showSlogan = false }: LogoProps) {
         className={exo2.className}
         style={{ fontSize: size, lineHeight: 1, display: 'inline-flex', alignItems: 'baseline' }}
       >
-        <span style={{ color: '#1a1f4e' }}>Apply</span>
+        <span style={{ color: '#1a1f4e' }}>Bullet</span>
         <span
           style={{
             background: GRADIENT,
@@ -27,7 +27,7 @@ export default function Logo({ size = 24, showSlogan = false }: LogoProps) {
             backgroundClip: 'text',
           }}
         >
-          Bullets
+          Bank
         </span>
       </div>
 
@@ -54,7 +54,7 @@ export default function Logo({ size = 24, showSlogan = false }: LogoProps) {
   )
 }
 
-/** Compact "P" mark for the collapsed sidebar icon rail */
+/** Compact "B" mark for the collapsed sidebar icon rail */
 export function LogoMark({ size = 20 }: { size?: number }) {
   return (
     <span
@@ -69,7 +69,7 @@ export function LogoMark({ size = 20 }: { size?: number }) {
         fontWeight: 700,
       }}
     >
-      A
+      B
     </span>
   )
 }

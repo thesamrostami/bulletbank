@@ -37,6 +37,7 @@ const icons = {
   home:     <Icon d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" d2="M7 18V11h6v7" />,
   jobs:     <Icon d="M6 2h8a1 1 0 011 1v14a1 1 0 01-1 1H6a1 1 0 01-1-1V3a1 1 0 011-1z" d2="M8 6h4M8 9h4M8 12h2" />,
   bullets:  <Icon d="M7 5h9M7 10h9M7 15h9M3.5 5h.01M3.5 10h.01M3.5 15h.01" />,
+  review:   <Icon d="M6 2h8a1 1 0 011 1v14a1 1 0 01-1 1H6a1 1 0 01-1-1V3a1 1 0 011-1z" d2="M7.5 10.5l2 2 3.5-4" />,
   profile:  <Icon d="M10 10a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM3.5 18a6.5 6.5 0 0113 0" />,
   credits:  <Icon d="M10 2a8 8 0 100 16A8 8 0 0010 2zM10 6v4M10 10l2.5 2.5" d2="M10 14h.01" />,
   capture:  <Icon d="M10 4v12M4 10h12" />,
@@ -200,6 +201,7 @@ function ExpandedNav({
         <NavLink href="/dashboard" exact icon={icons.home} onClick={onNavClick}>Home</NavLink>
         <NavLink href="/jobs" exact icon={icons.jobs} dot={hasUpcomingInterviews} onClick={onNavClick}>My Jobs</NavLink>
         <NavLink href="/profile/bullets" icon={icons.bullets} onClick={onNavClick}>Bullet Bank</NavLink>
+        <NavLink href="/review-pack" icon={icons.review} onClick={onNavClick}>Review pack</NavLink>
         <NavLink href="/profile/about" icon={icons.profile} excludePrefix="/profile/bullets" onClick={onNavClick}>My Profile</NavLink>
         <NavLink href="/credits" icon={icons.credits} onClick={onNavClick}>Credits</NavLink>
 
@@ -272,6 +274,7 @@ function CollapsedNav({
         <IconLink href="/dashboard" exact title="Home">{icons.home}</IconLink>
         <IconLink href="/jobs" exact title="My Jobs" dot={hasUpcomingInterviews}>{icons.jobs}</IconLink>
         <IconLink href="/profile/bullets" title="Bullet Bank">{icons.bullets}</IconLink>
+        <IconLink href="/review-pack" title="Review pack">{icons.review}</IconLink>
         <IconLink href="/profile/about" title="My Profile" excludePrefix="/profile/bullets">{icons.profile}</IconLink>
         <IconLink href="/credits" title="Credits">{icons.credits}</IconLink>
         <div className="mt-2 pt-2 border-t border-[var(--border-subtle)] w-full flex justify-center">

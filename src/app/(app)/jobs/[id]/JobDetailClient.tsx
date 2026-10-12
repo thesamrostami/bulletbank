@@ -34,6 +34,7 @@ export default function JobDetailClient({ job: initial }: { job: Job }) {
   const [clCopied, setClCopied] = useState(false)
   const [cvDownloadError, setCvDownloadError] = useState('')
   const [clDownloadError, setClDownloadError] = useState('')
+  const [fetchingUploadedDoc, setFetchingUploadedDoc] = useState<'cv' | 'cover_letter' | null>(null)
   const [activeTab, setActiveTab] = useState<Tab>(
     initial.status === 'Interview Scheduled' ? 'interview' : 'overview'
   )
@@ -265,6 +266,28 @@ export default function JobDetailClient({ job: initial }: { job: Job }) {
       setClCopied(true)
       setTimeout(() => setClCopied(false), 2000)
     } catch {}
+  }
+
+  // own_cv_url / own_cover_letter_url hold a storage path, not a URL —
+  // downloads go through /api/jobs/[id]/document-url for a short-lived link.
+  const handleDownloadUploadedDoc = async (type: 'cv' | 'cover_letter') => {
+    const setError = type === 'cv' ? setCvDownloadError : setClDownloadError
+    setFetchingUploadedDoc(type)
+    setError('')
+    try {
+      const res = await fetch(`/api/jobs/${job.id}/document-url?type=${type}`)
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.url) {
+        setError(data?.error || 'Could not get download link. Please try again.')
+        return
+      }
+      const win = window.open(data.url, '_blank', 'noopener,noreferrer')
+      if (!win) window.location.assign(data.url)
+    } catch {
+      setError('Could not get download link. Please try again.')
+    } finally {
+      setFetchingUploadedDoc(null)
+    }
   }
 
   const hasCv = job.cv_snapshot || job.own_cv_url
@@ -541,11 +564,18 @@ export default function JobDetailClient({ job: initial }: { job: Job }) {
                 </div>
               </div>
             ) : job.own_cv_url ? (
-              <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                <span className="text-green-600 text-sm">✓ CV uploaded ({job.own_cv_filename})</span>
-                <a href={job.own_cv_url} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-[var(--border)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface)] transition-colors">
-                  Download →
-                </a>
+              <div className="py-2 border-b border-gray-50">
+                <div className="flex items-center justify-between">
+                  <span className="text-green-600 text-sm">✓ CV uploaded ({job.own_cv_filename})</span>
+                  <button
+                    onClick={() => handleDownloadUploadedDoc('cv')}
+                    disabled={fetchingUploadedDoc === 'cv'}
+                    className="text-xs px-3 py-1.5 border border-[var(--border)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface)] disabled:opacity-50 transition-colors"
+                  >
+                    {fetchingUploadedDoc === 'cv' ? 'Opening…' : 'Download →'}
+                  </button>
+                </div>
+                {cvDownloadError && <p className="text-xs text-red-600 text-right mt-1">{cvDownloadError}</p>}
               </div>
             ) : (
               <div className="flex items-center justify-between py-2 border-b border-gray-50">
@@ -610,11 +640,18 @@ export default function JobDetailClient({ job: initial }: { job: Job }) {
                 )}
               </div>
             ) : job.own_cover_letter_url ? (
-              <div className="flex items-center justify-between py-2">
-                <span className="text-green-600 text-sm">✓ Cover letter uploaded ({job.own_cover_letter_filename})</span>
-                <a href={job.own_cover_letter_url} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-[var(--border)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface)] transition-colors">
-                  Download →
-                </a>
+              <div className="py-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-green-600 text-sm">✓ Cover letter uploaded ({job.own_cover_letter_filename})</span>
+                  <button
+                    onClick={() => handleDownloadUploadedDoc('cover_letter')}
+                    disabled={fetchingUploadedDoc === 'cover_letter'}
+                    className="text-xs px-3 py-1.5 border border-[var(--border)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface)] disabled:opacity-50 transition-colors"
+                  >
+                    {fetchingUploadedDoc === 'cover_letter' ? 'Opening…' : 'Download →'}
+                  </button>
+                </div>
+                {clDownloadError && <p className="text-xs text-red-600 text-right mt-1">{clDownloadError}</p>}
               </div>
             ) : (
               <div className="flex items-center justify-between py-2">

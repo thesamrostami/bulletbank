@@ -3050,7 +3050,7 @@ export default function CVEditorPage() {
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center gap-1 mb-6 bg-gray-50 border border-gray-100 rounded-xl p-1 w-fit">
               {([
-                ['generate', 'Generate with ApplyBullets'],
+                ['generate', 'Generate with BulletBank'],
                 ['skip', 'Skip this step'],
               ] as [CoverMode, string][]).map(([cm, label]) => (
                 <button

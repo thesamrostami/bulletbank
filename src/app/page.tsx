@@ -107,7 +107,7 @@ function ProductPreview() {
 /* ── Data ───────────────────────────────────────────────── */
 const testimonials = [
   {
-    quote: 'I landed 3 interviews in my first week using ApplyBullets. The bullets it picks are shockingly relevant to each role.',
+    quote: 'I landed 3 interviews in my first week using BulletBank. The bullets it picks are shockingly relevant to each role.',
     name: 'Sarah K.',
     role: 'Software Engineer',
     initials: 'SK',
@@ -192,7 +192,7 @@ const steps = [
 const faqs = [
   {
     q: 'How is this different from a CV builder?',
-    a: 'Templates make every CV look the same. ApplyBullets keeps a bank of your real achievements and, for each job, selects and rewrites the bullets that match what that specific employer is asking for.',
+    a: 'Templates make every CV look the same. BulletBank keeps a bank of your real achievements and, for each job, selects and rewrites the bullets that match what that specific employer is asking for.',
   },
   {
     q: 'Will it invent things about my experience?',
@@ -225,7 +225,7 @@ export default function Home() {
       {/* ── Sticky nav ── */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100/80">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-5 sm:px-8 py-4">
-          <Link href="/" aria-label="ApplyBullets home">
+          <Link href="/" aria-label="BulletBank home">
             <Logo size={20} />
           </Link>
           <nav className="hidden sm:flex items-center gap-7">
@@ -358,7 +358,7 @@ export default function Home() {
       <section id="features" className="py-20 md:py-28">
         <div className="max-w-6xl mx-auto px-5 sm:px-8">
           <div className="text-center mb-14">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)] mb-3">Why ApplyBullets</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)] mb-3">Why BulletBank</p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--navy)] mb-4">
               Stop rewriting your CV from scratch
             </h2>
@@ -463,7 +463,7 @@ export default function Home() {
             {/* New way */}
             <div className="rounded-2xl border border-[#d4cfff] p-7 bg-white relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-[#6c5ce7]/5 to-[#00b4d8]/5 pointer-events-none" />
-              <p className="text-sm font-semibold uppercase tracking-wider mb-5 relative" style={{ color: '#6c5ce7' }}>With ApplyBullets</p>
+              <p className="text-sm font-semibold uppercase tracking-wider mb-5 relative" style={{ color: '#6c5ce7' }}>With BulletBank</p>
               <ul className="space-y-3.5 relative">
                 {[
                   'Bullets auto-selected to match each job',
@@ -493,7 +493,7 @@ export default function Home() {
           <div className="text-center mb-14">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)] mb-3">Testimonials</p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--navy)]">
-              Job seekers love ApplyBullets
+              Job seekers love BulletBank
             </h2>
           </div>
 
@@ -693,7 +693,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-100 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-gray-400">© {new Date().getFullYear()} ApplyBullets. All rights reserved.</p>
+            <p className="text-xs text-gray-400">© {new Date().getFullYear()} BulletBank. All rights reserved.</p>
             <p className="text-xs text-gray-400">Made for job seekers who value their time.</p>
           </div>
         </div>

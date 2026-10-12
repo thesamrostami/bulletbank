@@ -77,7 +77,7 @@ export default async function DashboardPage() {
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-[var(--text-primary)] mb-0.5">
-            {firstName ? `${greeting()}, ${firstName}` : 'Welcome to ApplyBullets'}
+            {firstName ? `${greeting()}, ${firstName}` : 'Welcome to BulletBank'}
           </h1>
           <p className="text-sm text-[var(--text-muted)]">
             {todayLabel}

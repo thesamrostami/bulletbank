@@ -1,4 +1,4 @@
-export const CONSENT_KEY = 'applybullets_analytics_consent'
+export const CONSENT_KEY = 'bulletbank_analytics_consent'
 export type ConsentValue = 'accepted' | 'rejected' | null
 
 export function getConsent(): ConsentValue {

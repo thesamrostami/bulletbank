@@ -50,9 +50,11 @@ export async function POST(req: NextRequest) {
           attributes: {
             checkout_data: {
               custom: {
+                // Only identity/context here. The credit amount is derived
+                // server-side in the webhook from the order's variant_id —
+                // custom_data is never trusted for amounts.
                 user_id: user.id,
                 pack_id: packId,
-                credits: pack.credits.toString(),
               },
             },
             product_options: {

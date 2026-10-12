@@ -1,7 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { createClient } from '@supabase/supabase-js'
-import { NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, LEMONSQUEEZY_WEBHOOK_SECRET } from '@/lib/env'
+import { CREDIT_PACKS } from '@/lib/plans'
+import {
+  NEXT_PUBLIC_SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
+  LEMONSQUEEZY_WEBHOOK_SECRET,
+  LEMONSQUEEZY_STARTER_VARIANT_ID,
+  LEMONSQUEEZY_STANDARD_VARIANT_ID,
+  LEMONSQUEEZY_PRO_VARIANT_ID,
+} from '@/lib/env'
+
+// Pack id → Lemon Squeezy variant id, same mapping the checkout route uses.
+const PACK_VARIANT_IDS: Record<string, string | undefined> = {
+  starter:  LEMONSQUEEZY_STARTER_VARIANT_ID,
+  standard: LEMONSQUEEZY_STANDARD_VARIANT_ID,
+  pro:      LEMONSQUEEZY_PRO_VARIANT_ID,
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,17 +56,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing custom_data', code: 'MISSING_DATA' }, { status: 400 })
   }
 
+  // custom_data is only trusted to tie the order to an account (user_id).
+  // Never take the credit AMOUNT from it: custom_data is baked into the
+  // checkout at creation time and travels through the client — a tampered or
+  // hand-crafted checkout could claim any number. The variant on the order is
+  // what Lemon Squeezy actually charged for, so credits are derived from that.
   const userId  = customData.user_id
-  const credits = parseInt(customData.credits, 10)
-  const packId  = customData.pack_id
   const orderId = event.data?.id?.toString()
 
-  console.log('[webhook] extracted custom_data:', { userId, credits, packId, orderId })
-
-  if (!userId || !credits || isNaN(credits)) {
-    console.error('[webhook] Missing user_id or credits in custom_data:', customData)
+  if (!userId) {
+    console.error('[webhook] Missing user_id in custom_data:', customData)
     return NextResponse.json({ error: 'Missing data', code: 'MISSING_DATA' }, { status: 400 })
   }
+
+  const variantId = event.data?.attributes?.first_order_item?.variant_id?.toString()
+  const pack = CREDIT_PACKS.find(p => PACK_VARIANT_IDS[p.id] != null && PACK_VARIANT_IDS[p.id] === variantId)
+  if (!pack) {
+    console.error('[webhook] Order variant_id matches no known credit pack — refusing to credit. variant_id:', variantId, 'order_id:', orderId)
+    return NextResponse.json({ error: 'Unknown variant', code: 'UNKNOWN_VARIANT' }, { status: 400 })
+  }
+  const credits = pack.credits
+  const packId  = pack.id
+
+  console.log('[webhook] resolved order:', { userId, variantId, packId, credits, orderId })
 
   const supabase = createClient(
     NEXT_PUBLIC_SUPABASE_URL,

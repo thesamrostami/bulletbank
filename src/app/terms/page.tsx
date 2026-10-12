@@ -4,7 +4,7 @@ export default function TermsPage() {
   return (
     <main className="max-w-2xl mx-auto px-6 py-16">
       <Link href="/" className="text-sm text-gray-400 hover:text-gray-700 mb-8 block">
-        ← Back to ApplyBullets
+        ← Back to BulletBank
       </Link>
 
       <h1 className="text-2xl font-semibold mb-2">Terms of service</h1>
@@ -13,9 +13,9 @@ export default function TermsPage() {
       <div className="prose prose-sm prose-gray max-w-none space-y-8">
 
         <section>
-          <h2 className="text-base font-semibold text-gray-900 mb-2">What ApplyBullets is</h2>
+          <h2 className="text-base font-semibold text-gray-900 mb-2">What BulletBank is</h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            ApplyBullets is a career tool that helps you build a bank of professional achievements,
+            BulletBank is a career tool that helps you build a bank of professional achievements,
             tailor your CV to specific roles, and track your job applications. It uses AI to help
             you produce stronger applications, faster. By using the service you agree to these terms.
           </p>
@@ -24,7 +24,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">What you can do</h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            You may use ApplyBullets for your own personal job searching. That means creating and
+            You may use BulletBank for your own personal job searching. That means creating and
             managing your own career profile, generating CVs and cover letters for roles you are
             genuinely applying for, and using any features the service provides for your own benefit.
           </p>
@@ -45,7 +45,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">AI-generated content</h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            ApplyBullets uses AI to help generate CVs, cover letters, bullet points, and other
+            BulletBank uses AI to help generate CVs, cover letters, bullet points, and other
             application materials. These outputs are AI-assisted suggestions, not professional advice.
             You are responsible for reviewing all generated content for accuracy before submitting it
             to employers. Do not submit anything you have not read and verified — AI can make mistakes,
@@ -57,7 +57,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">Credits and payments</h2>
           <p className="text-sm text-gray-600 leading-relaxed mb-3">
-            ApplyBullets uses a credit system. Credits are deducted each time you use a paid feature.
+            BulletBank uses a credit system. Credits are deducted each time you use a paid feature.
           </p>
           <ul className="text-sm text-gray-600 space-y-1.5 list-disc list-inside ml-1">
             <li>Credits that have already been used are non-refundable</li>
@@ -74,7 +74,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">Service availability</h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            ApplyBullets is provided as-is. We do not guarantee any specific level of uptime or
+            BulletBank is provided as-is. We do not guarantee any specific level of uptime or
             availability at this stage. We will do our best to keep the service running reliably,
             but we are not liable for losses caused by downtime, bugs, or service interruptions.
           </p>
@@ -109,7 +109,7 @@ export default function TermsPage() {
 
       <div className="mt-12 pt-8 border-t border-gray-100">
         <Link href="/" className="text-sm text-gray-400 hover:text-gray-700 transition-colors">
-          ← Back to ApplyBullets
+          ← Back to BulletBank
         </Link>
       </div>
     </main>

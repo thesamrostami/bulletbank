@@ -5,7 +5,7 @@ export default function PrivacyPage() {
   return (
     <main className="max-w-2xl mx-auto px-6 py-16">
       <Link href="/" className="text-sm text-gray-400 hover:text-gray-700 mb-8 block">
-        ← Back to ApplyBullets
+        ← Back to BulletBank
       </Link>
 
       <h1 className="text-2xl font-semibold mb-2">Privacy notice</h1>
@@ -14,9 +14,9 @@ export default function PrivacyPage() {
       <div className="prose prose-sm prose-gray max-w-none space-y-8">
 
         <section>
-          <h2 className="text-base font-semibold text-gray-900 mb-2">What ApplyBullets is</h2>
+          <h2 className="text-base font-semibold text-gray-900 mb-2">What BulletBank is</h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            ApplyBullets is a career tool that helps you build a bank of professional achievements,
+            BulletBank is a career tool that helps you build a bank of professional achievements,
             tailor your CV to specific roles, and track your job applications. It uses AI to help
             you produce stronger applications, faster.
           </p>
@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">What data we collect</h2>
           <p className="text-sm text-gray-600 leading-relaxed mb-3">
-            ApplyBullets collects the information you provide to build and maintain your career profile:
+            BulletBank collects the information you provide to build and maintain your career profile:
           </p>
           <ul className="text-sm text-gray-600 space-y-1.5 list-disc list-inside ml-1">
             <li>Your email address and password (used for authentication only)</li>
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">How we use your data</h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            Your data is used solely to provide the ApplyBullets service to you. It is never sold, shared
+            Your data is used solely to provide the BulletBank service to you. It is never sold, shared
             with third parties for marketing, or used to build advertising profiles.
           </p>
         </section>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">Third-party services</h2>
           <p className="text-sm text-gray-600 leading-relaxed mb-3">
-            ApplyBullets relies on the following third-party services:
+            BulletBank relies on the following third-party services:
           </p>
 
           <div className="space-y-4">
@@ -179,7 +179,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">Legal basis for processing</h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            ApplyBullets processes your personal data on the basis of your consent, given when you
+            BulletBank processes your personal data on the basis of your consent, given when you
             create an account and use the service. You can withdraw consent at any time by
             deleting your account.
           </p>
@@ -189,7 +189,7 @@ export default function PrivacyPage() {
 
       <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <Link href="/" className="text-sm text-gray-400 hover:text-gray-700 transition-colors">
-          ← Back to ApplyBullets
+          ← Back to BulletBank
         </Link>
         <ManageCookiesButton />
       </div>

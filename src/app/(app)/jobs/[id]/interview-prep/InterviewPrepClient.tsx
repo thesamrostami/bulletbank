@@ -1,6 +1,7 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
+import { CREDIT_COSTS } from '@/lib/plans'
 import type { CVSnapshot, FitAnalysis, InterviewDebrief } from '@/types'
 import type { StoredPrep, PrepVersion } from '@/lib/interview-prep'
 import InterviewDebriefModal from '@/components/InterviewDebriefModal'
@@ -82,7 +83,30 @@ function formatVersionDate(iso: string) {
 export default function InterviewPrepClient({ jobId, cachedPrep, jobSummary }: Props) {
   // storedPrep holds all versions. Starts from server-passed cache — no API call needed.
   const [storedPrep, setStoredPrep] = useState<StoredPrep | null>(cachedPrep)
-  const [loading, setLoading] = useState(cachedPrep === null)
+  const [fetchingDoc, setFetchingDoc] = useState<'cv' | 'cover_letter' | null>(null)
+  const [docError, setDocError] = useState('')
+
+  // ownCvUrl / ownCoverLetterUrl hold a storage path, not a URL — downloads
+  // go through /api/jobs/[id]/document-url for a short-lived link.
+  const handleDownloadUploadedDoc = async (type: 'cv' | 'cover_letter') => {
+    setFetchingDoc(type)
+    setDocError('')
+    try {
+      const res = await fetch(`/api/jobs/${jobId}/document-url?type=${type}`)
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.url) {
+        setDocError(data?.error || 'Could not get download link. Please try again.')
+        return
+      }
+      const win = window.open(data.url, '_blank', 'noopener,noreferrer')
+      if (!win) window.location.assign(data.url)
+    } catch {
+      setDocError('Could not get download link. Please try again.')
+    } finally {
+      setFetchingDoc(null)
+    }
+  }
+  const [generating, setGenerating] = useState(false)
   const [error, setError] = useState('')
   const [regenerating, setRegenerating] = useState(false)
 
@@ -97,39 +121,29 @@ export default function InterviewPrepClient({ jobId, cachedPrep, jobSummary }: P
   const [showDebriefModal, setShowDebriefModal] = useState(false)
   const [debriefSaved, setDebriefSaved] = useState(false)
 
-  // Generate on first visit (when no cached data at all)
-  useEffect(() => {
-    if (cachedPrep !== null) return   // already have data — never call the API
-
-    const controller = new AbortController()
-    const run = async () => {
-      try {
-        const res = await fetch('/api/interview-prep', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobId, forceRegenerate: false }),
-          signal: controller.signal,
-        })
-        const d = await res.json()
-        if ((d as { error?: string }).error) {
-          setError((d as { error: string }).error)
-        } else {
-          setStoredPrep(d as StoredPrep)
-          setVersionIdx(0)
-        }
-      } catch (e) {
-        if ((e as Error).name !== 'AbortError') {
-          setError('Failed to load interview prep. Please try again.')
-        }
-      } finally {
-        if (!controller.signal.aborted) setLoading(false)
+  // First generation is explicit — AI calls (and credit charges) fire only on
+  // user action, never on page load.
+  const handleGenerate = async () => {
+    setGenerating(true)
+    setError('')
+    try {
+      const res = await fetch('/api/interview-prep', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId, forceRegenerate: false }),
+      })
+      const d = await res.json()
+      if ((d as { error?: string }).error) {
+        setError((d as { error: string }).error)
+      } else {
+        setStoredPrep(d as StoredPrep)
+        setVersionIdx(0)
       }
+    } catch {
+      setError('Failed to generate interview prep. Please try again.')
     }
-    run()
-    return () => controller.abort()
-  // cachedPrep is stable (server-rendered prop) — jobId is the only real dependency
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobId])
+    setGenerating(false)
+  }
 
   const handleRegenerate = async () => {
     setRegenerating(true)
@@ -153,7 +167,8 @@ export default function InterviewPrepClient({ jobId, cachedPrep, jobSummary }: P
     setRegenerating(false)
   }
 
-  if (loading) {
+  // Intro state: no prep exists yet — nothing is generated until the user asks.
+  if (!storedPrep) {
     return (
       <div className="p-4 md:p-8 max-w-4xl">
         <Link href={`/jobs/${jobId}`} className="text-sm text-gray-400 hover:text-gray-600 mb-1 inline-block">
@@ -161,29 +176,33 @@ export default function InterviewPrepClient({ jobId, cachedPrep, jobSummary }: P
         </Link>
         <h1 className="text-xl font-semibold mt-2 mb-1">Interview Prep</h1>
         <p className="text-gray-500 text-sm mb-6">{jobSummary.company} · {jobSummary.role}</p>
-        <div className="text-gray-400 text-sm animate-pulse">Generating interview prep… this takes 15–25 seconds.</div>
+
+        <div className="bg-white rounded-2xl border border-[var(--border)] p-6 max-w-xl">
+          <p className="text-sm font-semibold text-[var(--text-primary)] mb-2">Get ready for this interview</p>
+          <p className="text-sm text-[var(--text-secondary)] mb-3">
+            Interview prep analyses the job posting and what you actually submitted, then generates:
+          </p>
+          <ul className="text-sm text-[var(--text-secondary)] space-y-1.5 mb-4">
+            <li className="flex items-start gap-2"><span className="text-green-500 mt-0.5 shrink-0">→</span>9–11 personalised questions with answer guides referencing your CV and cover letter</li>
+            <li className="flex items-start gap-2"><span className="text-green-500 mt-0.5 shrink-0">→</span>Metrics from your CV you&apos;ll need to defend</li>
+            <li className="flex items-start gap-2"><span className="text-green-500 mt-0.5 shrink-0">→</span>Skill gaps to address before the interview, with study resources</li>
+          </ul>
+          <p className="text-xs text-gray-400 mb-4">Uses {CREDIT_COSTS.interview_prep} credits · takes 15–25 seconds</p>
+          {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
+          <button
+            onClick={handleGenerate}
+            disabled={generating}
+            className="px-5 py-2.5 bg-[var(--navy)] text-white text-sm font-medium rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity"
+          >
+            {generating ? 'Generating…' : error ? 'Try again' : 'Generate interview prep'}
+          </button>
+          {generating && (
+            <p className="text-xs text-gray-400 animate-pulse mt-3">Generating interview prep… this takes 15–25 seconds.</p>
+          )}
+        </div>
       </div>
     )
   }
-
-  if (error && !storedPrep) {
-    return (
-      <div className="p-4 md:p-8 max-w-4xl">
-        <Link href={`/jobs/${jobId}`} className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block">
-          ← Back to job
-        </Link>
-        <p className="text-red-500 text-sm mb-3">{error}</p>
-        <button
-          onClick={handleRegenerate}
-          className="text-sm text-gray-900 underline hover:text-gray-600"
-        >
-          Try again
-        </button>
-      </div>
-    )
-  }
-
-  if (!storedPrep) return null
 
   // Build flat version list: [current, ...history]
   const allVersions: PrepVersion[] = [storedPrep.current, ...storedPrep.history]
@@ -637,15 +656,24 @@ export default function InterviewPrepClient({ jobId, cachedPrep, jobSummary }: P
               <div className="bg-gray-50 rounded-xl p-5">
                 <p className="text-sm font-medium text-gray-700 mb-3">You applied with your own documents</p>
                 {jobSummary.ownCvUrl && (
-                  <a href={jobSummary.ownCvUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline block mb-1">
-                    Download your submitted CV ({jobSummary.ownCvFilename}) →
-                  </a>
+                  <button
+                    onClick={() => handleDownloadUploadedDoc('cv')}
+                    disabled={fetchingDoc === 'cv'}
+                    className="text-sm text-blue-600 hover:underline block mb-1 text-left disabled:opacity-50"
+                  >
+                    {fetchingDoc === 'cv' ? 'Opening…' : `Download your submitted CV (${jobSummary.ownCvFilename}) →`}
+                  </button>
                 )}
                 {jobSummary.ownCoverLetterUrl && (
-                  <a href={jobSummary.ownCoverLetterUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline block">
-                    Download your submitted cover letter ({jobSummary.ownCoverLetterFilename}) →
-                  </a>
+                  <button
+                    onClick={() => handleDownloadUploadedDoc('cover_letter')}
+                    disabled={fetchingDoc === 'cover_letter'}
+                    className="text-sm text-blue-600 hover:underline block text-left disabled:opacity-50"
+                  >
+                    {fetchingDoc === 'cover_letter' ? 'Opening…' : `Download your submitted cover letter (${jobSummary.ownCoverLetterFilename}) →`}
+                  </button>
                 )}
+                {docError && <p className="text-xs text-red-600 mt-1">{docError}</p>}
               </div>
             )}
 

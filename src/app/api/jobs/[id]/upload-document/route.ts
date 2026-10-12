@@ -58,11 +58,27 @@ export async function POST(
   if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 })
 
   const { id } = await params
+
+  // Verify ownership before touching storage — uploading first would leave
+  // orphan files behind whenever the job check failed.
+  const { data: ownedJob, error: ownedJobError } = await supabase
+    .from('jobs')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single()
+  if (ownedJobError || !ownedJob) {
+    return NextResponse.json({ error: 'Not found', code: 'NOT_FOUND' }, { status: 404 })
+  }
+
   const formData = await req.formData()
   const file = formData.get('file') as File
-  const type = formData.get('type') as 'cv' | 'cover_letter'
+  const type = formData.get('type')
 
   if (!file || !type) return NextResponse.json({ error: 'Missing file or type' }, { status: 400 })
+  if (type !== 'cv' && type !== 'cover_letter') {
+    return NextResponse.json({ error: 'Invalid type. Use cv or cover_letter' }, { status: 400 })
+  }
 
   const ext = file.name.split('.').pop()?.toLowerCase()
   if (!ext || !['pdf', 'docx', 'doc', 'txt'].includes(ext)) {
@@ -74,24 +90,37 @@ export async function POST(
     return NextResponse.json({ error: 'File too large. Maximum size is 10MB.' }, { status: 400 })
   }
 
+  // Magic-byte sniff: the extension is user-controlled, so verify the content
+  // actually matches it before storing. Plain text has no signature — skip.
+  if (ext !== 'txt') {
+    const header = new Uint8Array(await file.slice(0, 8).arrayBuffer())
+    const matches = (sig: number[]) => sig.every((byte, i) => header[i] === byte)
+    const isPdf = matches([0x25, 0x50, 0x44, 0x46]) // %PDF
+    const isZip = matches([0x50, 0x4b, 0x03, 0x04]) // PK\x03\x04 (docx)
+    const isOle = matches([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]) // legacy .doc container
+    const contentValid = ext === 'pdf' ? isPdf : ext === 'docx' ? isZip : isZip || isOle
+    if (!contentValid) {
+      return NextResponse.json({ error: 'File content does not match its extension.' }, { status: 400 })
+    }
+  }
+
   const path = `${user.id}/${id}/${type}.${ext}`
 
   const { error: uploadError } = await supabase.storage
     .from('job-documents')
     .upload(path, file, { upsert: true })
 
-  if (uploadError) return NextResponse.json({ error: uploadError.message }, { status: 500 })
-
-  const { data: signedData, error: signedError } = await supabase.storage
-    .from('job-documents')
-    .createSignedUrl(path, 604800)
-  if (signedError || !signedData) {
-    return NextResponse.json({ error: 'Failed to generate file URL' }, { status: 500 })
+  if (uploadError) {
+    console.error('[upload-document] Storage upload failed:', uploadError.message)
+    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
   }
 
+  // Store the storage path, not a signed URL — signed URLs expire after 7 days
+  // and would leave live download links sitting in DB rows and backups.
+  // Clients get a short-lived URL on demand from /api/jobs/[id]/document-url.
   const updateData: Record<string, unknown> = type === 'cv'
-    ? { own_cv_url: signedData.signedUrl, own_cv_filename: file.name }
-    : { own_cover_letter_url: signedData.signedUrl, own_cover_letter_filename: file.name }
+    ? { own_cv_url: path, own_cv_filename: file.name }
+    : { own_cover_letter_url: path, own_cover_letter_filename: file.name }
 
   if (type === 'cv') {
     try {
@@ -127,7 +156,7 @@ export async function POST(
   if (updateError) console.error('[upload-document] DB update failed:', updateError)
 
   return NextResponse.json({
-    url: signedData.signedUrl,
+    path,
     filename: file.name,
     cvTextExtracted: type === 'cv' ? (!!updateData.own_cv_text && !updateError) : undefined,
   })

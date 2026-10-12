@@ -174,7 +174,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-between px-5 sm:px-8 gap-4 flex-wrap">
           <div className="flex items-center gap-4">
             <Logo size={15} />
-            <p className="text-xs text-gray-400">© {new Date().getFullYear()} ApplyBullets</p>
+            <p className="text-xs text-gray-400">© {new Date().getFullYear()} BulletBank</p>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Privacy</Link>
